@@ -92,6 +92,20 @@ def runKmeans(x, y, cmin=2, cmax=10):
     ari = metrics.adjusted_rand_score(y, km.labels_)
     return np.abs(ari), best_k
 
+def runAgglomerative(x, y, cmin=2, cmax=10):
+    best_sil = -1
+    best_k = cmin
+    for k in range(cmin, cmax + 1):
+        agg = cluster.AgglomerativeClustering(n_clusters=k).fit(x)
+        sil = metrics.silhouette_score(x, agg.labels_)
+        if sil > best_sil:
+            best_sil = sil
+            best_k = k
+            
+    agg = cluster.AgglomerativeClustering(n_clusters=best_k).fit(x)
+    ari = metrics.adjusted_rand_score(y, agg.labels_)
+    return np.abs(ari), best_k
+
 def generate_datasets():
     datasets = {}
     
@@ -124,7 +138,8 @@ def compare_algorithms():
     
     results = {
         'Dataset': [],
-        'KMeans': []
+        'KMeans': [],
+        'Agglomerative': []
     }
     
     for name, (x, y) in datasets.items():
@@ -135,10 +150,14 @@ def compare_algorithms():
         ari, _ = runKmeans(x, y)
         results['KMeans'].append(round(ari, 4))
         
+        # Agglomerative
+        ari, _ = runAgglomerative(x, y)
+        results['Agglomerative'].append(round(ari, 4))
+        
     import csv
     
     print("\nTableau des ARI :")
-    headers = ["Dataset", "KMeans"]
+    headers = ["Dataset", "KMeans", "Agglomerative"]
     print("| " + " | ".join(headers) + " |")
     print("|" + "|".join(["---"] * len(headers)) + "|")
     
