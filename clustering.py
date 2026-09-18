@@ -5,21 +5,21 @@ from sklearn import metrics
 from sklearn import cluster
 
 def main():
-    # Création du jeu de données de 4 gaussiennes (800 points par gaussienne)
+    # Create the 4 Gaussians dataset (800 points per Gaussian)
     centers = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
     x, y = skdata.make_blobs(n_samples=3200, centers=centers, cluster_std=0.5, random_state=42)
 
-    # Affichage des données
+    # Plot initial data
     plt.figure(figsize=(8, 6))
     plt.scatter(x[:, 0], x[:, 1], c=y, cmap='viridis', marker='.')
-    plt.title('donnees initiales')
+    plt.title('initial data')
     plt.xlabel('x')
     plt.ylabel('y')
-    plt.savefig('donnees_initiales.png')
+    plt.savefig('initial_data.png')
     plt.show()
 
     # =========================================================================
-    # 2. Trouver le nombre de classes
+    # 2. Finding the optimal number of clusters
     # =========================================================================
     c_range = range(2, 11)
     sil = []
@@ -37,18 +37,18 @@ def main():
     plt.subplot(1, 2, 1)
     plt.plot(c_range, J, '.-k')
     plt.xlabel("cluster number")
-    plt.ylabel("J")
+    plt.ylabel("J (Inertia)")
     
     plt.subplot(1, 2, 2)
     plt.plot(c_range, sil, '.-b')
     plt.xlabel("cluster number")
     plt.ylabel("silhouette index")
     
-    plt.savefig('silhouette_et_J.png')
+    plt.savefig('silhouette_and_inertia.png')
     plt.show()
 
     # =========================================================================
-    # 3. Evolution de la fonction objectif à chaque itération
+    # 3. Evolution of the objective function at each iteration
     # =========================================================================
     c = 4
     figure = plt.figure(figsize=(16, 3))
@@ -60,21 +60,21 @@ def main():
         plt.subplot(1, 4, i)
         plt.scatter(x[:, 0], x[:, 1], c=res.labels_, cmap='viridis', marker='.')
         plt.plot(res.cluster_centers_[:, 0], res.cluster_centers_[:, 1], 'xr', markersize=12, markeredgewidth=4)
-        plt.title(f"iteration={i}, inertie={int(res.inertia_)}")
+        plt.title(f"iteration={i}, inertia={int(res.inertia_)}")
 
     plt.tight_layout()
-    plt.savefig('iterations_kmeans.png')
+    plt.savefig('kmeans_iterations.png')
     plt.show()
 
     # =========================================================================
-    # 4. Evaluation supervisée avec ARI (Adjusted Rand Index)
+    # 4. Supervised evaluation with ARI (Adjusted Rand Index)
     # =========================================================================
     res = cluster.KMeans(n_clusters=4, random_state=42, n_init=10).fit(x)
     ARI = np.abs(metrics.adjusted_rand_score(y, res.labels_))
     print(f"Adjusted Rand Index (ARI) = {ARI:.4f}")
 
     # =========================================================================
-    # 5. Comparaison des algorithmes
+    # 5. Algorithm comparison
     # =========================================================================
     compare_algorithms()
 
@@ -108,7 +108,7 @@ def runAgglomerative(x, y, cmin=2, cmax=10):
 
 def runSpectral(x, y, cmin=2, cmax=10):
     import warnings
-    warnings.filterwarnings('ignore') # SpectralClustering peut être bavard
+    warnings.filterwarnings('ignore') # SpectralClustering can be noisy
     best_sil = -1
     best_k = cmin
     for k in range(cmin, cmax + 1):
@@ -156,31 +156,31 @@ def runMeanShift(x, y):
 def generate_datasets():
     datasets = {}
     
-    # 4 Gaussiennes initiales
+    # 4 initial Gaussians
     centers = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-    datasets['Gaussiennes'] = skdata.make_blobs(n_samples=400, centers=centers, cluster_std=0.5, random_state=42)
+    datasets['Gaussians'] = skdata.make_blobs(n_samples=400, centers=centers, cluster_std=0.5, random_state=42)
     
-    # Lunes
+    # Moons
     datasets['Moons'] = skdata.make_moons(n_samples=400, noise=0.1, random_state=42)
     
-    # Données uniformes
+    # Uniform data
     x_uni = np.round(np.random.rand(200, 2), 2)
     y_uni = np.random.randint(0, 3, 200)
     datasets['Uniform'] = (x_uni, y_uni)
     
-    # Groupes non équilibrés
+    # Unbalanced groups
     datasets['Unbalanced'] = skdata.make_blobs(n_samples=[100, 200, 50], 
                                               centers=[[-1, -1], [0, 0], [1, 1]], 
                                               cluster_std=[0.1, 0.5, 0.1], 
                                               random_state=42)
     
-    # Cercles
+    # Circles
     datasets['Circles'] = skdata.make_circles(n_samples=400, factor=0.2, noise=0.1, random_state=42)
     
     return datasets
 
 def compare_algorithms():
-    print("\n--- Comparaison des algorithmes de Clustering ---")
+    print("\n--- Clustering Algorithms Comparison ---")
     datasets = generate_datasets()
     
     results = {
@@ -193,7 +193,7 @@ def compare_algorithms():
     }
     
     for name, (x, y) in datasets.items():
-        print(f"Évaluation sur le jeu de données : {name}")
+        print(f"Evaluating dataset: {name}")
         results['Dataset'].append(name)
         
         # KMeans
@@ -218,7 +218,7 @@ def compare_algorithms():
         
     import csv
     
-    print("\nTableau des ARI :")
+    print("\nARI Scores Table:")
     headers = ["Dataset", "KMeans", "Agglomerative", "Spectral", "DBSCAN", "MeanShift"]
     print("| " + " | ".join(headers) + " |")
     print("|" + "|".join(["---"] * len(headers)) + "|")
@@ -227,13 +227,13 @@ def compare_algorithms():
         row = [str(results[col][i]) for col in headers]
         print("| " + " | ".join(row) + " |")
         
-    with open('resultats_clustering.csv', 'w', newline='') as f:
+    with open('clustering_results.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(headers)
         for i in range(len(results['Dataset'])):
             writer.writerow([results[col][i] for col in headers])
             
-    print("\nRésultats sauvegardés dans 'resultats_clustering.csv'")
+    print("\nResults saved to 'clustering_results.csv'")
 
 if __name__ == '__main__':
     main()
