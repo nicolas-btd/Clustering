@@ -145,6 +145,14 @@ def runDBSCAN(x, y):
     ari = metrics.adjusted_rand_score(y, db.labels_)
     return np.abs(ari), best_eps
 
+def runMeanShift(x, y):
+    bandwidth = cluster.estimate_bandwidth(x, quantile=0.2)
+    if bandwidth == 0:
+        bandwidth = 1.0
+    ms = cluster.MeanShift(bandwidth=bandwidth).fit(x)
+    ari = metrics.adjusted_rand_score(y, ms.labels_)
+    return np.abs(ari), len(set(ms.labels_))
+
 def generate_datasets():
     datasets = {}
     
@@ -180,7 +188,8 @@ def compare_algorithms():
         'KMeans': [],
         'Agglomerative': [],
         'Spectral': [],
-        'DBSCAN': []
+        'DBSCAN': [],
+        'MeanShift': []
     }
     
     for name, (x, y) in datasets.items():
@@ -203,10 +212,14 @@ def compare_algorithms():
         ari, _ = runDBSCAN(x, y)
         results['DBSCAN'].append(round(ari, 4))
         
+        # MeanShift
+        ari, _ = runMeanShift(x, y)
+        results['MeanShift'].append(round(ari, 4))
+        
     import csv
     
     print("\nTableau des ARI :")
-    headers = ["Dataset", "KMeans", "Agglomerative", "Spectral", "DBSCAN"]
+    headers = ["Dataset", "KMeans", "Agglomerative", "Spectral", "DBSCAN", "MeanShift"]
     print("| " + " | ".join(headers) + " |")
     print("|" + "|".join(["---"] * len(headers)) + "|")
     
