@@ -24,3 +24,8 @@ En fixant un nombre de clusters à 4 et une initialisation spécifique des centr
 ![Évolution K-Means](iterations_kmeans.png)
 
 - [x] Évolution de la fonction objectif à chaque itération.
+
+### 4. Évaluation supervisée avec ARI
+Nous utilisons la métrique de validation supervisée Adjusted Rand Index (ARI) pour évaluer la qualité de notre partition finale (en la comparant avec les vraies étiquettes du jeu de données). L'ARI obtenu permet de valider le bon fonctionnement de K-Means.
+
+- [x] Calcul de l'Adjusted Rand Index (ARI).

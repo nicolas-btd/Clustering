@@ -66,5 +66,12 @@ def main():
     plt.savefig('iterations_kmeans.png')
     plt.show()
 
+    # =========================================================================
+    # 4. Evaluation supervisée avec ARI (Adjusted Rand Index)
+    # =========================================================================
+    res = cluster.KMeans(n_clusters=4, random_state=42, n_init=10).fit(x)
+    ARI = np.abs(metrics.adjusted_rand_score(y, res.labels_))
+    print(f"Adjusted Rand Index (ARI) = {ARI:.4f}")
+
 if __name__ == '__main__':
     main()
