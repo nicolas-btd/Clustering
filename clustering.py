@@ -106,6 +106,26 @@ def runAgglomerative(x, y, cmin=2, cmax=10):
     ari = metrics.adjusted_rand_score(y, agg.labels_)
     return np.abs(ari), best_k
 
+def runSpectral(x, y, cmin=2, cmax=10):
+    import warnings
+    warnings.filterwarnings('ignore') # SpectralClustering peut être bavard
+    best_sil = -1
+    best_k = cmin
+    for k in range(cmin, cmax + 1):
+        try:
+            sp = cluster.SpectralClustering(n_clusters=k, random_state=42, assign_labels='kmeans').fit(x)
+            if len(set(sp.labels_)) > 1:
+                sil = metrics.silhouette_score(x, sp.labels_)
+                if sil > best_sil:
+                    best_sil = sil
+                    best_k = k
+        except:
+            pass
+            
+    sp = cluster.SpectralClustering(n_clusters=best_k, random_state=42, assign_labels='kmeans').fit(x)
+    ari = metrics.adjusted_rand_score(y, sp.labels_)
+    return np.abs(ari), best_k
+
 def generate_datasets():
     datasets = {}
     
@@ -139,7 +159,8 @@ def compare_algorithms():
     results = {
         'Dataset': [],
         'KMeans': [],
-        'Agglomerative': []
+        'Agglomerative': [],
+        'Spectral': []
     }
     
     for name, (x, y) in datasets.items():
@@ -154,10 +175,14 @@ def compare_algorithms():
         ari, _ = runAgglomerative(x, y)
         results['Agglomerative'].append(round(ari, 4))
         
+        # Spectral
+        ari, _ = runSpectral(x, y)
+        results['Spectral'].append(round(ari, 4))
+        
     import csv
     
     print("\nTableau des ARI :")
-    headers = ["Dataset", "KMeans", "Agglomerative"]
+    headers = ["Dataset", "KMeans", "Agglomerative", "Spectral"]
     print("| " + " | ".join(headers) + " |")
     print("|" + "|".join(["---"] * len(headers)) + "|")
     
