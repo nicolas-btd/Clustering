@@ -73,5 +73,86 @@ def main():
     ARI = np.abs(metrics.adjusted_rand_score(y, res.labels_))
     print(f"Adjusted Rand Index (ARI) = {ARI:.4f}")
 
+    # =========================================================================
+    # 5. Comparaison des algorithmes
+    # =========================================================================
+    compare_algorithms()
+
+def runKmeans(x, y, cmin=2, cmax=10):
+    best_sil = -1
+    best_k = cmin
+    for k in range(cmin, cmax + 1):
+        km = cluster.KMeans(n_clusters=k, random_state=42, n_init=10).fit(x)
+        sil = metrics.silhouette_score(x, km.labels_)
+        if sil > best_sil:
+            best_sil = sil
+            best_k = k
+    
+    km = cluster.KMeans(n_clusters=best_k, random_state=42, n_init=10).fit(x)
+    ari = metrics.adjusted_rand_score(y, km.labels_)
+    return np.abs(ari), best_k
+
+def generate_datasets():
+    datasets = {}
+    
+    # 4 Gaussiennes initiales
+    centers = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+    datasets['Gaussiennes'] = skdata.make_blobs(n_samples=400, centers=centers, cluster_std=0.5, random_state=42)
+    
+    # Lunes
+    datasets['Moons'] = skdata.make_moons(n_samples=400, noise=0.1, random_state=42)
+    
+    # Données uniformes
+    x_uni = np.round(np.random.rand(200, 2), 2)
+    y_uni = np.random.randint(0, 3, 200)
+    datasets['Uniform'] = (x_uni, y_uni)
+    
+    # Groupes non équilibrés
+    datasets['Unbalanced'] = skdata.make_blobs(n_samples=[100, 200, 50], 
+                                              centers=[[-1, -1], [0, 0], [1, 1]], 
+                                              cluster_std=[0.1, 0.5, 0.1], 
+                                              random_state=42)
+    
+    # Cercles
+    datasets['Circles'] = skdata.make_circles(n_samples=400, factor=0.2, noise=0.1, random_state=42)
+    
+    return datasets
+
+def compare_algorithms():
+    print("\n--- Comparaison des algorithmes de Clustering ---")
+    datasets = generate_datasets()
+    
+    results = {
+        'Dataset': [],
+        'KMeans': []
+    }
+    
+    for name, (x, y) in datasets.items():
+        print(f"Évaluation sur le jeu de données : {name}")
+        results['Dataset'].append(name)
+        
+        # KMeans
+        ari, _ = runKmeans(x, y)
+        results['KMeans'].append(round(ari, 4))
+        
+    import csv
+    
+    print("\nTableau des ARI :")
+    headers = ["Dataset", "KMeans"]
+    print("| " + " | ".join(headers) + " |")
+    print("|" + "|".join(["---"] * len(headers)) + "|")
+    
+    for i in range(len(results['Dataset'])):
+        row = [str(results[col][i]) for col in headers]
+        print("| " + " | ".join(row) + " |")
+        
+    with open('resultats_clustering.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        for i in range(len(results['Dataset'])):
+            writer.writerow([results[col][i] for col in headers])
+            
+    print("\nRésultats sauvegardés dans 'resultats_clustering.csv'")
+
 if __name__ == '__main__':
     main()

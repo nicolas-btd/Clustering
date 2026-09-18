@@ -29,3 +29,15 @@ En fixant un nombre de clusters à 4 et une initialisation spécifique des centr
 Nous utilisons la métrique de validation supervisée Adjusted Rand Index (ARI) pour évaluer la qualité de notre partition finale (en la comparant avec les vraies étiquettes du jeu de données). L'ARI obtenu permet de valider le bon fonctionnement de K-Means.
 
 - [x] Calcul de l'Adjusted Rand Index (ARI).
+
+### 5. Comparaison des algorithmes
+
+Nous avons commencé par évaluer **KMeans** de manière automatisée sur différents jeux de données générés avec Scikit-Learn : Gaussiennes, Lunes (Moons), Données uniformes, Gaussiennes non équilibrées et Cercles.
+
+| Dataset | KMeans |
+|---|---|
+| Gaussiennes | 0.8901 |
+| Moons | 0.3049 |
+| Uniform | 0.0003 |
+| Unbalanced | 0.6776 |
+| Circles | 0.5825 |
