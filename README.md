@@ -10,3 +10,10 @@ Pour commencer notre exploration, nous avons créé un jeu de données synthéti
 ![Données initiales](donnees_initiales.png)
 
 - [x] Génération de données synthétiques (4 gaussiennes, 800 points chacune).
+
+### 2. Trouver le nombre de classes optimal
+Nous avons utilisé la méthode du coude sur l'inertie ($J$) et l'indice de silhouette pour déterminer le nombre idéal de clusters sur notre jeu de données (k allant de 2 à 10).
+
+![Inertie et Silhouette](silhouette_et_J.png)
+
+- [x] Trouver le nombre de classes optimal via K-Means (Inertie et Silhouette).
