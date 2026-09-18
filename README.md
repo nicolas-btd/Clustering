@@ -33,12 +33,12 @@ Nous utilisons la métrique de validation supervisée Adjusted Rand Index (ARI) 
 ### 5. Comparaison des algorithmes
 
 Nous avons commencé par évaluer **KMeans** de manière automatisée sur différents jeux de données générés avec Scikit-Learn : Gaussiennes, Lunes (Moons), Données uniformes, Gaussiennes non équilibrées et Cercles.
-Nous avons ensuite ajouté **AgglomerativeClustering** puis **SpectralClustering**.
+Nous avons ensuite ajouté **AgglomerativeClustering**, **SpectralClustering** et **DBSCAN**.
 
-| Dataset | KMeans | Agglomerative | Spectral |
-|---|---|---|---|
-| Gaussiennes | 0.8901 | 0.8296 | 0.8961 |
-| Moons | 0.3049 | 0.2930 | 0.2844 |
-| Uniform | 0.0003 | 0.0015 | 0.0015 |
-| Unbalanced | 0.6776 | 0.5789 | 0.8119 |
-| Circles | 0.5825 | 0.5865 | 0.5828 |
+| Dataset | KMeans | Agglomerative | Spectral | DBSCAN |
+|---|---|---|---|---|
+| Gaussiennes | 0.8901 | 0.8296 | 0.8961 | 0.5620 |
+| Moons | 0.3049 | 0.2930 | 0.2844 | 0.9850 |
+| Uniform | 0.0003 | 0.0015 | 0.0015 | 0.0038 |
+| Unbalanced | 0.6776 | 0.5789 | 0.8119 | 0.8110 |
+| Circles | 0.5825 | 0.5865 | 0.5828 | 0.5811 |

@@ -126,6 +126,25 @@ def runSpectral(x, y, cmin=2, cmax=10):
     ari = metrics.adjusted_rand_score(y, sp.labels_)
     return np.abs(ari), best_k
 
+def runDBSCAN(x, y):
+    best_sil = -1
+    best_eps = 0.5
+    best_min_samples = 5
+    
+    for eps in [0.05, 0.1, 0.2, 0.3, 0.5, 0.8]:
+        for min_samples in [3, 5, 10]:
+            db = cluster.DBSCAN(eps=eps, min_samples=min_samples).fit(x)
+            if len(set(db.labels_)) > 1:
+                sil = metrics.silhouette_score(x, db.labels_)
+                if sil > best_sil:
+                    best_sil = sil
+                    best_eps = eps
+                    best_min_samples = min_samples
+                    
+    db = cluster.DBSCAN(eps=best_eps, min_samples=best_min_samples).fit(x)
+    ari = metrics.adjusted_rand_score(y, db.labels_)
+    return np.abs(ari), best_eps
+
 def generate_datasets():
     datasets = {}
     
@@ -160,7 +179,8 @@ def compare_algorithms():
         'Dataset': [],
         'KMeans': [],
         'Agglomerative': [],
-        'Spectral': []
+        'Spectral': [],
+        'DBSCAN': []
     }
     
     for name, (x, y) in datasets.items():
@@ -179,10 +199,14 @@ def compare_algorithms():
         ari, _ = runSpectral(x, y)
         results['Spectral'].append(round(ari, 4))
         
+        # DBSCAN
+        ari, _ = runDBSCAN(x, y)
+        results['DBSCAN'].append(round(ari, 4))
+        
     import csv
     
     print("\nTableau des ARI :")
-    headers = ["Dataset", "KMeans", "Agglomerative", "Spectral"]
+    headers = ["Dataset", "KMeans", "Agglomerative", "Spectral", "DBSCAN"]
     print("| " + " | ".join(headers) + " |")
     print("|" + "|".join(["---"] * len(headers)) + "|")
     
