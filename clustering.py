@@ -47,5 +47,24 @@ def main():
     plt.savefig('silhouette_et_J.png')
     plt.show()
 
+    # =========================================================================
+    # 3. Evolution de la fonction objectif à chaque itération
+    # =========================================================================
+    c = 4
+    figure = plt.figure(figsize=(16, 3))
+    centroids = np.array([[-2, -1.5], [-2, -1], [-2, 0], [1.5, 1]])
+    
+    for i in range(1, 5):
+        res = cluster.KMeans(n_clusters=c, n_init=1, init=centroids, max_iter=i, random_state=42).fit(x)
+        
+        plt.subplot(1, 4, i)
+        plt.scatter(x[:, 0], x[:, 1], c=res.labels_, cmap='viridis', marker='.')
+        plt.plot(res.cluster_centers_[:, 0], res.cluster_centers_[:, 1], 'xr', markersize=12, markeredgewidth=4)
+        plt.title(f"iteration={i}, inertie={int(res.inertia_)}")
+
+    plt.tight_layout()
+    plt.savefig('iterations_kmeans.png')
+    plt.show()
+
 if __name__ == '__main__':
     main()

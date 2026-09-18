@@ -17,3 +17,10 @@ Nous avons utilisé la méthode du coude sur l'inertie ($J$) et l'indice de silh
 ![Inertie et Silhouette](silhouette_et_J.png)
 
 - [x] Trouver le nombre de classes optimal via K-Means (Inertie et Silhouette).
+
+### 3. Évolution de l'algorithme K-Means
+En fixant un nombre de clusters à 4 et une initialisation spécifique des centroïdes, nous observons le déplacement des centres et la diminution de l'inertie sur les 4 premières itérations.
+
+![Évolution K-Means](iterations_kmeans.png)
+
+- [x] Évolution de la fonction objectif à chaque itération.
